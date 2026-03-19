@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+
 :root {
     --bg-color: #1a1a24;
     --text-color: #f0f0f0;
@@ -140,8 +142,14 @@ button:hover { background-color: #f1c40f; }
 
 .error { color: #ff4c4c; }
 
-.leaderboard-area {
+.side-container {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.leaderboard-area {
     background: var(--panel-bg);
     padding: 20px;
     border-radius: 10px;
@@ -155,6 +163,73 @@ button:hover { background-color: #f1c40f; }
 .leaderboard-area li {
     padding: 10px;
     border-bottom: 1px solid #444;
+}
+
+/* --- Sticky Note --- */
+.sticky-note {
+    background: #FFF8DC;
+    background: linear-gradient(135deg, #FFFACD 0%, #FFE4B5 100%);
+    padding: 20px;
+    border-radius: 3px;
+    box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: rotate(-2deg);
+    position: relative;
+}
+
+.sticky-note::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 200, 100, 0.3);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: -1;
+}
+
+.sticky-note-header {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    font-weight: 700;
+    color: #8B4513;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #DAA520;
+}
+
+.sticky-note-content {
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: #333;
+    line-height: 1.8;
+    min-height: 150px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.sticky-note-content .secret-word {
+    display: block;
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-left: 3px solid #DAA520;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* --- Responsività Mobile --- */
@@ -189,7 +264,12 @@ button:hover { background-color: #f1c40f; }
         gap: 15px;
     }
 
-    .puzzle-area, .leaderboard-area {
+    .side-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .puzzle-area, .leaderboard-area, .sticky-note {
         flex: none;
         width: 100%;
     }
@@ -212,6 +292,10 @@ button:hover { background-color: #f1c40f; }
         width: 100%;
         padding: 12px;
         min-height: 44px; /* Per touch su mobile */
+    }
+
+    .sticky-note {
+        transform: rotate(0deg);
     }
 }
 

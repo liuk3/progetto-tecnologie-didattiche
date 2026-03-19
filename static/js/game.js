@@ -7,11 +7,66 @@ const PUZZLE_URLS = [
     "https://puzzel.org/it/cruciverba/tuo-id-5"  // 5. Assassino (Pergamena)
 ];
 
+const STEP_NAMES = [
+    "Arma",
+    "Movente",
+    "Luogo",
+    "Tempo",
+    "Colpevole"
+];
+
+// Salva le parole segrete nel localStorage
+function saveSecretWords(words) {
+    localStorage.setItem('secretWords', JSON.stringify(words));
+}
+
+// Carica le parole segrete dal localStorage
+function loadSecretWords() {
+    const words = localStorage.getItem('secretWords');
+    return words ? JSON.parse(words) : [];
+}
+
+// Aggiunge una parola segreta al post-it
+function addSecretWordToSticky(word, step) {
+    const content = document.getElementById('sticky-note-content');
+    const words = loadSecretWords();
+    
+    const stepName = step < STEP_NAMES.length ? STEP_NAMES[step] : `Step ${step + 1}`;
+    const fullEntry = `${stepName}: ${word}`;
+    
+    // Aggiungi alla lista se non è già presente
+    if (!words.includes(fullEntry)) {
+        words.push(fullEntry);
+        saveSecretWords(words);
+    }
+    
+    // Aggiorna il post-it
+    renderStickyNote();
+}
+
+// Renderizza il post-it con tutte le parole
+function renderStickyNote() {
+    const content = document.getElementById('sticky-note-content');
+    const words = loadSecretWords();
+    
+    if (words.length === 0) {
+        content.innerHTML = '<p style="color: #999; font-style: italic;">Nessuna parola ancora...</p>';
+        return;
+    }
+    
+    content.innerHTML = words.map((word, index) => {
+        return `<div class="secret-word">${word}</div>`;
+    }).join('');
+}
+
 function initGame() {
     if (!document.getElementById('puzzle-frame')) return;
 
     // Precarica i suoni di festa (usa file reali se disponibili)
     loadCelebrationSounds();
+    
+    // Inizializza il post-it
+    renderStickyNote();
 
     // Aggiungi event listener per il tasto Enter sull'input della parola chiave
     document.getElementById('keyword-input').addEventListener('keydown', function(event) {
@@ -153,6 +208,9 @@ async function submitAnswer() {
     if (data.success) {
         errorMsg.style.color = "lightgreen";
         errorMsg.innerText = "Corretto! Avanzamento in corso...";
+        
+        // Aggiungi la parola segreta al post-it
+        addSecretWordToSticky(answer, data.step);
 
         if (data.step < 5) {
             // Festeggia il passo completato
