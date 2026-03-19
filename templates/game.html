@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cluedo Class - Gara</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body onload="initGame()">
+    <div id="confetti-container"></div>
+    
+    <div class="board-container">
+        <h2>Mappa Indagini</h2>
+        <div class="track">
+            <div class="step-node" id="node-0">Arma</div>
+            <div class="step-node" id="node-1">Movente</div>
+            <div class="step-node" id="node-2">Luogo</div>
+            <div class="step-node" id="node-3">Tempo</div>
+            <div class="step-node golden" id="node-4">Il Colpevole</div>
+        </div>
+        <div id="players-layer"></div> 
+    </div>
+
+    <div class="main-content">
+        <div class="puzzle-area">
+            <h3 id="puzzle-title">Cruciverba Attuale</h3>
+            
+            <div id="iframe-container">
+                <iframe id="puzzle-frame" src="about:blank" width="100%" height="450px" frameborder="0"></iframe>
+            </div>
+
+            <div class="submit-area">
+                <p>Hai risolto il cruciverba? Inserisci la parola chiave nascosta per avanzare!</p>
+                <input type="text" id="keyword-input" placeholder="Parola chiave...">
+                <button onclick="submitAnswer()">Avanza ➡️</button>
+                <p id="error-msg" class="error"></p>
+            </div>
+        </div>
+
+        <div class="leaderboard-area">
+            <h3>Classifica in Diretta</h3>
+            <ul id="leaderboard-list"></ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const myTeamId = "{{ session['team_id'] }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/celebrations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>

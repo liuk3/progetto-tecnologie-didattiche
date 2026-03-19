@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cluedo Class - Ingresso</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Indagine in Corso 🕵️‍♂️</h1>
+        <p>Scegliete il nome della vostra squadra e l'icona per iniziare la gara.</p>
+        
+        <input type="text" id="teamName" placeholder="Nome Squadra..." required>
+        
+        <div class="icon-selector" id="iconSelector">
+            {% for icon in valid_icons %}
+            <div class="icon-option{% if loop.first %} selected{% endif %}" data-icon="{{ icon }}">{{ icon }}</div>
+            {% endfor %}
+        </div>
+
+        <button onclick="joinGame()">Inizia l'Indagine!</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

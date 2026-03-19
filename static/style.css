@@ -1,0 +1,235 @@
+:root {
+    --bg-color: #1a1a24;
+    --text-color: #f0f0f0;
+    --accent: #d4af37; /* Oro per lo step finale */
+    --panel-bg: #2a2a36;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --- Login --- */
+.login-container {
+    background: var(--panel-bg);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    margin-top: 10vh;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.login-container input {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: none;
+}
+
+.icon-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+.icon-option {
+    cursor: pointer;
+    padding: 8px;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    font-size: 1.5em;
+}
+
+.icon-option.selected {
+    border-color: var(--accent);
+    background-color: rgba(212, 175, 55, 0.1);
+}
+
+button {
+    background-color: var(--accent);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover { background-color: #f1c40f; }
+
+/* --- Game Board --- */
+.board-container {
+    width: 100%;
+    max-width: 1000px;
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.track {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-bottom: 40px;
+    border-bottom: 4px solid #444;
+}
+
+.step-node {
+    background: #444;
+    padding: 10px 20px;
+    border-radius: 20px;
+    z-index: 2;
+}
+
+.step-node.golden {
+    background: linear-gradient(45deg, #d4af37, #f1c40f);
+    color: #000;
+    font-weight: bold;
+}
+
+.player-icon {
+    position: absolute;
+    font-size: 24px;
+    /* Cambiato da 'left' a 'all' per animare anche gli spostamenti verticali, 
+       aumentato a 0.8s per un effetto scivolamento più elegante */
+    transition: all 0.8s ease-in-out; 
+    transform: translateX(-50%);
+    z-index: 10; /* Assicura che le icone stiano sopra la linea */
+}
+
+/* --- Main Layout --- */
+.main-content {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.puzzle-area {
+    flex: 2;
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.submit-area {
+    margin-top: 20px;
+    text-align: center;
+    background: #111;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.submit-area input {
+    padding: 8px;
+    margin-right: 10px;
+}
+
+.error { color: #ff4c4c; }
+
+.leaderboard-area {
+    flex: 1;
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.leaderboard-area ul {
+    list-style: none;
+    padding: 0;
+}
+
+.leaderboard-area li {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+}
+
+/* --- Responsività Mobile --- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .login-container {
+        margin-top: 5vh;
+        padding: 30px 20px;
+        max-width: 90%;
+    }
+
+    .board-container {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .track {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .step-node {
+        width: 100%;
+        text-align: center;
+    }
+
+    .main-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .puzzle-area, .leaderboard-area {
+        flex: none;
+        width: 100%;
+    }
+
+    .submit-area input {
+        width: 70%;
+        margin-right: 5px;
+    }
+
+    .icon-selector {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .icon-option {
+        margin: 5px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        min-height: 44px; /* Per touch su mobile */
+    }
+}
+
+/* --- Confetti --- */
+#confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    will-change: transform, opacity;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
