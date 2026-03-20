@@ -1,0 +1,66 @@
+/* --- Responsività Mobile --- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .login-container {
+        margin-top: 5vh;
+        padding: 30px 20px;
+        max-width: 90%;
+    }
+
+    .board-container {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .track {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .step-node {
+        width: 100%;
+        text-align: center;
+    }
+
+    .main-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .side-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .puzzle-area, .leaderboard-area, .sticky-note {
+        flex: none;
+        width: 100%;
+    }
+
+    .submit-area input {
+        width: 70%;
+        margin-right: 5px;
+    }
+
+    .icon-selector {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .icon-option {
+        margin: 5px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        min-height: 44px; /* Per touch su mobile */
+    }
+
+    .sticky-note {
+        transform: rotate(0deg);
+    }
+}

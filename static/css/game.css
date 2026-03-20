@@ -1,0 +1,161 @@
+/* --- Game Board --- */
+.board-container {
+    width: 100%;
+    max-width: 1000px;
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.track {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-bottom: 40px;
+    border-bottom: 4px solid #444;
+}
+
+.step-node {
+    background: #444;
+    padding: 10px 20px;
+    border-radius: 20px;
+    z-index: 2;
+}
+
+.step-node.golden {
+    background: linear-gradient(45deg, #d4af37, #f1c40f);
+    color: #000;
+    font-weight: bold;
+}
+
+.player-icon {
+    position: absolute;
+    font-size: 24px;
+    /* Cambiato da 'left' a 'all' per animare anche gli spostamenti verticali, 
+       aumentato a 0.8s per un effetto scivolamento più elegante */
+    transition: all 0.8s ease-in-out; 
+    transform: translateX(-50%);
+    z-index: 10; /* Assicura che le icone stiano sopra la linea */
+}
+
+/* --- Main Layout --- */
+.main-content {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.puzzle-area {
+    flex: 2;
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.submit-area {
+    margin-top: 20px;
+    text-align: center;
+    background: #111;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.submit-area input {
+    padding: 8px;
+    margin-right: 10px;
+}
+
+.error { color: #ff4c4c; }
+
+.side-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.leaderboard-area {
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.leaderboard-area ul {
+    list-style: none;
+    padding: 0;
+}
+
+.leaderboard-area li {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+}
+
+/* --- Sticky Note --- */
+.sticky-note {
+    background: #FFF8DC;
+    background: linear-gradient(135deg, #FFFACD 0%, #FFE4B5 100%);
+    padding: 20px;
+    border-radius: 3px;
+    box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: rotate(-2deg);
+    position: relative;
+}
+
+.sticky-note::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 200, 100, 0.3);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: -1;
+}
+
+.sticky-note-header {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    font-weight: 700;
+    color: #8B4513;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #DAA520;
+}
+
+.sticky-note-content {
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: #333;
+    line-height: 1.8;
+    min-height: 150px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.sticky-note-content .secret-word {
+    display: block;
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-left: 3px solid #DAA520;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

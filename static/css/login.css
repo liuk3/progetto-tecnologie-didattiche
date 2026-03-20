@@ -1,0 +1,51 @@
+/* --- Login --- */
+.login-container {
+    background: var(--panel-bg);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    margin-top: 10vh;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.login-container input {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: none;
+}
+
+.icon-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+.icon-option {
+    cursor: pointer;
+    padding: 8px;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    font-size: 1.5em;
+}
+
+.icon-option.selected {
+    border-color: var(--accent);
+    background-color: rgba(212, 175, 55, 0.1);
+}
+
+button {
+    background-color: var(--accent);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover { background-color: #f1c40f; }
