@@ -182,7 +182,10 @@ function renderLeaderboard(leaderboard) {
         if (team.step === 5) {
             // Calcola il tempo in secondi
             const timeTaken = Math.round(team.end_time - team.start_time);
-            status = `🏆 Completato in ${timeTaken} sec!`;
+            // Calcola il tempo in minuti e secondi
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+            status = `🏆 Completato in ${minutes}:${seconds.toString()}!`;
         }
         li.innerText = `${index + 1}. ${team.icon} ${team.name} - ${status}`;
         list.appendChild(li);
