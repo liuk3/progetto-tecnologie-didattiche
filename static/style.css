@@ -9,13 +9,72 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
+    background-image: url('/static/imgs/AdobeStock_1569662240_hero.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: var(--bg-color); /* fallback */
     color: var(--text-color);
     margin: 0;
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+}
+
+.background-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.bg-img {
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.8;
+}
+
+.bg-img.footprints {
+    width: 800px;
+    height: 800px;
+    background-image: url('/static/imgs/176883-footprints-shoe-download-hq.png');
+}
+
+.bg-img.gloves {
+    width: 80px;
+    height: 80px;
+    background-image: url('/static/imgs/criminal-gloves-icon-vector-40823765.avif');
+}
+
+.bg-img.magnifying {
+    width: 80px;
+    height: 80px;
+    background-image: url('/static/imgs/magnifying-glass-clipart.png');
+}
+
+.bg-img.question {
+    width: 80px;
+    height: 80px;
+    background-image: url('/static/imgs/Black_question_mark.png');
+}
+
+.bg-img.pin {
+    width: 80px;
+    height: 80px;
+    background-image: url('/static/imgs/36-368449_pin-investigation-pictures-clip-art-crime-scene-body-outline.png');
+}
+
+.bg-img.notes {
+    width: 80px;
+    height: 80px;
+    background-image: url('/static/imgs/pngtree-cream-sticky-notes-paper-illustration-with-clip-white-transparent-background-png-image_6484210.png');
 }
 
 /* --- Login --- */
