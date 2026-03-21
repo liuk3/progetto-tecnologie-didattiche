@@ -40,7 +40,16 @@
             <div class="step-node" id="node-3">Tempo</div>
             <div class="step-node golden" id="node-4">Il Colpevole</div>
         </div>
-        <div id="players-layer"></div> 
+        
+        <div class="players-grid">
+            <div class="step-players" id="players-step-0"></div>
+            <div class="step-players" id="players-step-1"></div>
+            <div class="step-players" id="players-step-2"></div>
+            <div class="step-players" id="players-step-3"></div>
+            <div class="step-players" id="players-step-4"></div>
+        </div>
+        
+        <div id="players-absolute-layer"></div>
     </div>
 
     <div class="main-content">
@@ -76,7 +85,15 @@
     <script>
         const myTeamId = "{{ session['team_id'] }}";
     </script>
+    <!-- Celebrazioni -->
     <script src="{{ url_for('static', filename='js/celebrations.js') }}"></script>
+    <!-- Costanti globali -->
+    <script src="{{ url_for('static', filename='js/constants.js') }}"></script>
+    <!-- Moduli -->
+    <script src="{{ url_for('static', filename='js/modules/secretWords.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/board.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/submission.js') }}"></script>
+    <!-- Main -->
     <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 </body>
 </html>
