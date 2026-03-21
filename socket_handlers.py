@@ -1,8 +1,27 @@
+import time
+import re
+
 from flask_socketio import emit
 from flask import request
 import threading
 from data import teams, sid_to_team, pending_removals
+from config import VALID_ICONS
 from utils import _remove_team_if_still_disconnected, emit_state_update
+
+
+def _extract_icon_from_team_id(team_id):
+    """Estrae l'icona dal team_id (formato previsto: team_<ts>_i<idx>_<name>)."""
+    if not isinstance(team_id, str):
+        return None
+
+    match = re.search(r"_i(\d+)_", team_id)
+    if not match:
+        return None
+
+    icon_index = int(match.group(1))
+    if 0 <= icon_index < len(VALID_ICONS):
+        return VALID_ICONS[icon_index]
+    return None
 
 
 def handle_join(data):
@@ -25,6 +44,21 @@ def handle_join(data):
     else:
         import logging
         logging.info(f"Team {team_id} not found in teams")  # Debug
+        recovered_icon = _extract_icon_from_team_id(team_id)
+        # Se il team non è stato trovato, probabilmente è un team che era esistente ed è stato rimosso, lo aggiungiamo come team nuovo con step 0 utilizzando i dati ricevuti
+        teams[team_id] = {
+            "name": data.get('name', 'Unknown'),
+            "icon": recovered_icon or data.get('icon', 'default'),
+            "step": 0,
+            "start_time": time.time(),
+            "end_time": None,
+            "last_seen": time.time()
+        }
+        sid_to_team[request.sid] = team_id  # type: ignore
+        import logging
+        logging.info(f"Team {team_id} created and joined with SID {request.sid}")  # type: ignore
+        emit_state_update()
+        
 
 
 def handle_disconnect():

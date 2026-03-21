@@ -29,8 +29,10 @@ def register():
     if icon not in VALID_ICONS:
         return jsonify({"success": False, "message": "Icona non valida"})
     
-    # Crea un ID unico per la squadra
-    team_id = f"team_{int(time.time())}_{team_name}"
+    # Crea un ID unico per la squadra includendo anche l'indice dell'icona selezionata.
+    # Formato: team_<timestamp>_i<icon_index>_<team_name>
+    icon_index = VALID_ICONS.index(icon)
+    team_id = f"team_{int(time.time())}_i{icon_index}_{team_name}"
     
     teams[team_id] = {
         "name": team_name,

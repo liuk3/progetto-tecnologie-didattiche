@@ -15,48 +15,100 @@ const STEP_NAMES = [
     "Colpevole"
 ];
 
-// Salva le parole segrete nel localStorage
-function saveSecretWords(words) {
-    localStorage.setItem('secretWords', JSON.stringify(words));
+function getSecretWordsStorageKey() {
+    return `secretWords_${myTeamId}`;
 }
 
-// Carica le parole segrete dal localStorage
+function normalizeSecretWords(words) {
+    if (!Array.isArray(words)) return [];
+
+    return words
+        .map(entry => {
+            if (entry && typeof entry === 'object' && typeof entry.step === 'number' && typeof entry.word === 'string') {
+                return { step: entry.step, word: entry.word };
+            }
+
+            // Compatibilita con formato legacy: "NomeStep: parola"
+            if (typeof entry === 'string' && entry.includes(':')) {
+                const parts = entry.split(':');
+                if (parts.length >= 2) {
+                    const stepName = parts[0].trim();
+                    const word = parts.slice(1).join(':').trim();
+                    const step = STEP_NAMES.findIndex(name => name.toLowerCase() === stepName.toLowerCase());
+                    if (step >= 0 && word) {
+                        return { step, word };
+                    }
+                }
+            }
+
+            return null;
+        })
+        .filter(Boolean);
+}
+
+// Salva le parole segrete nel localStorage (scope per team)
+function saveSecretWords(words) {
+    localStorage.setItem(getSecretWordsStorageKey(), JSON.stringify(words));
+}
+
+// Carica le parole segrete dal localStorage (scope per team)
 function loadSecretWords() {
-    const words = localStorage.getItem('secretWords');
-    return words ? JSON.parse(words) : [];
+    const words = localStorage.getItem(getSecretWordsStorageKey());
+    if (!words) return [];
+
+    try {
+        return normalizeSecretWords(JSON.parse(words));
+    } catch (_) {
+        return [];
+    }
 }
 
 // Aggiunge una parola segreta al post-it
-function addSecretWordToSticky(word, step) {
-    const content = document.getElementById('sticky-note-content');
+function addSecretWordToSticky(word, solvedStep) {
     const words = loadSecretWords();
-    
-    const stepName = step < STEP_NAMES.length ? STEP_NAMES[step] : `Step ${step + 1}`;
-    const fullEntry = `${stepName}: ${word}`;
-    
+
     // Aggiungi alla lista se non è già presente
-    if (!words.includes(fullEntry)) {
-        words.push(fullEntry);
+    const alreadyPresent = words.some(entry => entry.step === solvedStep && entry.word === word);
+    if (!alreadyPresent) {
+        words.push({ step: solvedStep, word });
         saveSecretWords(words);
     }
-    
+
     // Aggiorna il post-it
     renderStickyNote();
 }
 
 // Renderizza il post-it con tutte le parole
-function renderStickyNote() {
+function renderStickyNote(maxUnlockedStep = null) {
     const content = document.getElementById('sticky-note-content');
-    const words = loadSecretWords();
+    const allWords = loadSecretWords();
+    const words = typeof maxUnlockedStep === 'number'
+        ? allWords.filter(entry => entry.step < maxUnlockedStep)
+        : allWords;
     
     if (words.length === 0) {
         content.innerHTML = '<p style="color: #999; font-style: italic;">Nessuna parola ancora...</p>';
         return;
     }
-    
-    content.innerHTML = words.map((word, index) => {
-        return `<div class="secret-word">${word}</div>`;
+
+    words.sort((a, b) => a.step - b.step);
+
+    content.innerHTML = words.map((entry) => {
+        const stepName = entry.step < STEP_NAMES.length ? STEP_NAMES[entry.step] : `Step ${entry.step + 1}`;
+        return `<div class="secret-word">${stepName}: ${entry.word}</div>`;
     }).join('');
+}
+
+function syncStickyNoteWithCurrentStep(teamStep) {
+    const words = loadSecretWords();
+    const filteredWords = words.filter(entry => entry.step < teamStep);
+
+    // Se lo step corrente e' piu' indietro rispetto al salvato, persistiamo il taglio.
+    if (filteredWords.length !== words.length) {
+        saveSecretWords(filteredWords);
+    }
+
+    renderStickyNote(teamStep);
 }
 
 function initGame() {
@@ -65,8 +117,8 @@ function initGame() {
     // Precarica i suoni di festa (usa file reali se disponibili)
     loadCelebrationSounds();
     
-    // Inizializza il post-it
-    renderStickyNote();
+    // Inizializza il post-it in stato bloccato; verra' sincronizzato al primo state_update.
+    renderStickyNote(0);
 
     // Aggiungi event listener per il tasto Enter sull'input della parola chiave
     document.getElementById('keyword-input').addEventListener('keydown', function(event) {
@@ -89,6 +141,11 @@ function initGame() {
         console.log('Received state update:', data); // Debug
         renderBoard(data.teams);
         renderLeaderboard(data.leaderboard);
+
+        const myTeam = data.teams[myTeamId];
+        if (myTeam) {
+            syncStickyNoteWithCurrentStep(myTeam.step);
+        }
     });
 }
 
@@ -216,8 +273,8 @@ async function submitAnswer() {
         errorMsg.style.color = "lightgreen";
         errorMsg.innerText = "Corretto! Avanzamento in corso...";
         
-        // Aggiungi la parola segreta al post-it
-        addSecretWordToSticky(answer, data.step);
+        // Aggiungi la parola segreta allo step appena risolto.
+        addSecretWordToSticky(answer, data.step - 1);
 
         if (data.step < 5) {
             // Festeggia il passo completato
