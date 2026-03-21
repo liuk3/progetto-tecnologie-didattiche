@@ -24,6 +24,19 @@ def _extract_icon_from_team_id(team_id):
     return None
 
 
+def _extract_name_from_team_id(team_id):
+    """Estrae il nome squadra dal team_id (formato previsto: team_<ts>_i<idx>_<name>)."""
+    if not isinstance(team_id, str):
+        return None
+
+    match = re.search(r"_i\d+_(.+)$", team_id)
+    if not match:
+        return None
+
+    extracted_name = match.group(1).strip()
+    return extracted_name if extracted_name else None
+
+
 def handle_join(data):
     team_id = data.get('team_id')
     import logging
@@ -45,9 +58,10 @@ def handle_join(data):
         import logging
         logging.info(f"Team {team_id} not found in teams")  # Debug
         recovered_icon = _extract_icon_from_team_id(team_id)
+        recovered_name = _extract_name_from_team_id(team_id)
         # Se il team non è stato trovato, probabilmente è un team che era esistente ed è stato rimosso, lo aggiungiamo come team nuovo con step 0 utilizzando i dati ricevuti
         teams[team_id] = {
-            "name": data.get('name', 'Unknown'),
+            "name": recovered_name or data.get('name', 'Unknown'),
             "icon": recovered_icon or data.get('icon', 'default'),
             "step": 0,
             "start_time": time.time(),
