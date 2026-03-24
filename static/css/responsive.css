@@ -45,8 +45,10 @@
     }
 
     .story-content {
-        max-height: 240px;
-        font-size: 0.95rem;
+        max-height: 300px;
+        padding: 14px;
+        font-size: 0.98rem;
+        line-height: 1.75;
     }
 
     .submit-area input {
