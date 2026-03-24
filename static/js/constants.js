@@ -9,9 +9,9 @@ const PUZZLE_URLS = [
 ];
 
 const STEP_NAMES = [
-    "Arma",
-    "Movente",
     "Luogo",
     "Tempo",
+    "Arma",
+    "Movente",
     "Colpevole"
 ];

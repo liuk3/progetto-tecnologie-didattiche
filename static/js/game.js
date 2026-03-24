@@ -7,6 +7,15 @@
 
 let initialIframeMarkup = null;
 
+function syncStepNodeLabels() {
+    for (let i = 0; i < STEP_NAMES.length; i++) {
+        const node = document.getElementById(`node-${i}`);
+        if (node) {
+            node.textContent = STEP_NAMES[i];
+        }
+    }
+}
+
 function getIframeContainer() {
     return document.getElementById('iframe-container');
 }
@@ -64,6 +73,8 @@ function applyProgressUI(teamStep) {
 
 function initGame() {
     if (!document.getElementById('puzzle-frame')) return;
+
+    syncStepNodeLabels();
 
     const iframeContainer = getIframeContainer();
     if (iframeContainer) {
