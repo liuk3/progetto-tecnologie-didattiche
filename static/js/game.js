@@ -5,8 +5,70 @@
 // - modules/board.js (renderizzazione board e leaderboard)
 // - modules/submission.js (gestione invio risposte)
 
+let initialIframeMarkup = null;
+
+function getIframeContainer() {
+    return document.getElementById('iframe-container');
+}
+
+function showCompletedState() {
+    const iframeContainer = getIframeContainer();
+    if (!iframeContainer) return;
+
+    iframeContainer.innerHTML = `
+        <h2>🎉 MISTERO RISOLTO! 🎉</h2>
+        <p>Hai trovato l'assassino! Guarda la classifica.</p>
+        <p>
+            Ora puoi procedere scrivendo il riassunto della storia su
+            <a href="${classroomLink}" target="_blank" rel="noopener noreferrer">Classroom</a>.
+        </p>
+    `;
+
+    const submitArea = document.querySelector('.submit-area');
+    if (submitArea) {
+        submitArea.style.display = 'none';
+    }
+}
+
+function showPuzzleState(step) {
+    const iframeContainer = getIframeContainer();
+    if (!iframeContainer) return;
+
+    if (initialIframeMarkup === null) {
+        initialIframeMarkup = iframeContainer.innerHTML;
+    }
+
+    if (!document.getElementById('puzzle-frame')) {
+        iframeContainer.innerHTML = initialIframeMarkup;
+    }
+
+    const puzzleFrame = document.getElementById('puzzle-frame');
+    if (puzzleFrame && step >= 0 && step < PUZZLE_URLS.length) {
+        puzzleFrame.src = PUZZLE_URLS[step];
+    }
+
+    const submitArea = document.querySelector('.submit-area');
+    if (submitArea) {
+        submitArea.style.display = '';
+    }
+}
+
+function applyProgressUI(teamStep) {
+    if (teamStep >= 5) {
+        showCompletedState();
+        return;
+    }
+
+    showPuzzleState(teamStep);
+}
+
 function initGame() {
     if (!document.getElementById('puzzle-frame')) return;
+
+    const iframeContainer = getIframeContainer();
+    if (iframeContainer) {
+        initialIframeMarkup = iframeContainer.innerHTML;
+    }
 
     // Precarica i suoni di festa (usa file reali se disponibili)
     loadCelebrationSounds();
@@ -39,8 +101,12 @@ function initGame() {
         const myTeam = data.teams[myTeamId];
         if (myTeam) {
             syncStickyNoteWithCurrentStep(myTeam.step);
+            applyProgressUI(myTeam.step);
         }
     });
+
+    // Fallback iniziale: assicura UI coerente anche se lo state_update tarda ad arrivare.
+    fetchState();
 }
 
 async function fetchState() {
@@ -49,4 +115,10 @@ async function fetchState() {
 
     renderBoard(data.teams);
     renderLeaderboard(data.leaderboard);
+
+    const myTeam = data.teams[myTeamId];
+    if (myTeam) {
+        syncStickyNoteWithCurrentStep(myTeam.step);
+        applyProgressUI(myTeam.step);
+    }
 }

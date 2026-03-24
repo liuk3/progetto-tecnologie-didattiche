@@ -26,16 +26,13 @@ async function submitAnswer() {
         if (data.step < 5) {
             // Festeggia il passo completato
             celebrateStep();
-
-            // Aggiorna iframe al puzzle successivo
-            document.getElementById('puzzle-frame').src = PUZZLE_URLS[data.step];
         } else {
             // Festeggia la vittoria finale
             celebrateFinish();
-
-            document.getElementById('iframe-container').innerHTML = "<h2>🎉 MISTERO RISOLTO! 🎉</h2><p>Hai trovato l'assassino! Guarda la classifica.</p>";
-            document.querySelector('.submit-area').style.display = 'none';
         }
+
+        // Aggiorna la UI coerentemente con lo step corrente (incluso stato finale persistente).
+        applyProgressUI(data.step);
         // Non chiamiamo più fetchState(), poiché il server emette aggiornamenti via SocketIO
     } else {
         errorMsg.style.color = "#ff4c4c";

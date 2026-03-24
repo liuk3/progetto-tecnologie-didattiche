@@ -2,7 +2,7 @@ from flask import render_template, request, jsonify, session, redirect, url_for
 import time
 import html
 from app_factory import app
-from config import VALID_ICONS, STORY_TEXT
+from config import VALID_ICONS, STORY_TEXT, CLASSROOM_LINK
 from data import teams
 from utils import emit_state_update
 
@@ -58,7 +58,7 @@ def register():
 def game():
     if 'team_id' not in session:
         return redirect(url_for('index'))
-    return render_template('game.html', story_text=STORY_TEXT)
+    return render_template('game.html', story_text=STORY_TEXT, classroom_link=CLASSROOM_LINK)
 
 
 @app.route('/api/state')
