@@ -55,6 +55,12 @@
     <div class="main-content">
         <div class="puzzle-area">
             <h3 id="puzzle-title">Cruciverba Attuale</h3>
+
+            <section class="story-panel" aria-label="Storia del caso">
+                <h4 class="story-title">Fascicolo del Caso</h4>
+                <p class="story-subtitle">Leggete attentamente: le parole chiave sono nascoste nei dettagli.</p>
+                <div class="story-content">{{ story_text | replace('\n', '<br>') | safe }}</div>
+            </section>
             
             <div id="iframe-container">
                 <iframe id="puzzle-frame" src="about:blank" width="100%" height="450px" frameborder="0"></iframe>

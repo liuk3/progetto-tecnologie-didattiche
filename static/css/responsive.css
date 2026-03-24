@@ -40,6 +40,15 @@
         width: 100%;
     }
 
+    .story-panel {
+        padding: 14px;
+    }
+
+    .story-content {
+        max-height: 240px;
+        font-size: 0.95rem;
+    }
+
     .submit-area input {
         width: 70%;
         margin-right: 5px;
