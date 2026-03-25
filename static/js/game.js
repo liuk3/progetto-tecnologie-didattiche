@@ -20,6 +20,36 @@ function getIframeContainer() {
     return document.getElementById('iframe-container');
 }
 
+function extractPuzzleMakerXid(url) {
+    if (!url) return null;
+
+    const match = url.match(/puzzle-maker\.online\/crossword-([a-zA-Z0-9]+)/);
+    return match ? match[1] : null;
+}
+
+function renderPuzzleMakerEmbed(iframeContainer, xid) {
+    iframeContainer.innerHTML = '';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'wl-xword';
+    wrapper.setAttribute('data-xid', xid);
+    wrapper.setAttribute('data-width', '100%');
+    wrapper.setAttribute('data-height', '700px');
+
+    const script = document.createElement('script');
+    script.src = 'https://embed.puzzle-maker.online/dist/embed.js';
+    script.async = true;
+    script.defer = true;
+
+    const info = document.createElement('p');
+    info.className = 'wl-info';
+    info.innerHTML = 'Creato con l\'ausilio di <a href="https://puzzle-maker.online?lang=it">puzzle-maker.online</a>';
+
+    wrapper.appendChild(script);
+    wrapper.appendChild(info);
+    iframeContainer.appendChild(wrapper);
+}
+
 function showCompletedState() {
     const iframeContainer = getIframeContainer();
     if (!iframeContainer) return;
@@ -47,13 +77,20 @@ function showPuzzleState(step) {
         initialIframeMarkup = iframeContainer.innerHTML;
     }
 
-    if (!document.getElementById('puzzle-frame')) {
-        iframeContainer.innerHTML = initialIframeMarkup;
-    }
+    const puzzleUrl = step >= 0 && step < PUZZLE_URLS.length ? PUZZLE_URLS[step] : null;
+    const puzzleMakerXid = extractPuzzleMakerXid(puzzleUrl) || (step === 0 ? '1d7gf82' : null);
 
-    const puzzleFrame = document.getElementById('puzzle-frame');
-    if (puzzleFrame && step >= 0 && step < PUZZLE_URLS.length) {
-        puzzleFrame.src = PUZZLE_URLS[step];
+    if (puzzleMakerXid) {
+        renderPuzzleMakerEmbed(iframeContainer, puzzleMakerXid);
+    } else {
+        if (!document.getElementById('puzzle-frame')) {
+            iframeContainer.innerHTML = initialIframeMarkup;
+        }
+
+        const puzzleFrame = document.getElementById('puzzle-frame');
+        if (puzzleFrame && puzzleUrl) {
+            puzzleFrame.src = puzzleUrl;
+        }
     }
 
     const submitArea = document.querySelector('.submit-area');

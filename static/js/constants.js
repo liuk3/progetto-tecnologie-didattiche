@@ -1,11 +1,11 @@
 // --- COSTANTI GLOBALI ---
 
 const PUZZLE_URLS = [
-    "https://puzzel.org/it/cruciverba/tuo-id-1", // 1. Arma
-    "https://puzzel.org/it/cruciverba/tuo-id-2", // 2. Movente
-    "https://puzzel.org/it/cruciverba/tuo-id-3", // 3. Luogo
-    "https://puzzel.org/it/cruciverba/tuo-id-4", // 4. Tempo
-    "https://puzzel.org/it/cruciverba/tuo-id-5"  // 5. Assassino (Pergamena)
+    "https://puzzle-maker.online/crossword-1d7gf82-luogo-del-delitto?lang=it", // 1. Luogo
+    "https://puzzle-maker.online/crossword-1d7gf82-tempo-del-delitto?lang=it", // 2. Tempo
+    "https://puzzle-maker.online/crossword-1d7gf82-movente-del-delitto?lang=it", // 3. Movente
+    "https://puzzle-maker.online/crossword-1d7gf82-movente-del-delitto?lang=it", // 4. Movente
+    "https://puzzle-maker.online/crossword-1d7gf82-assassino-del-delitto?lang=it"  // 5. Assassino (Pergamena)
 ];
 
 const STEP_NAMES = [
