@@ -1,7 +1,16 @@
+import os
+import logging
+
 # Configurazioni e costanti
 SOLUTIONS = ["biblioteca", "notte di novembre", "corda", "relazione passata", "benedetta farkas"]
 VALID_ICONS = ["🕵️", "👮", "🧑‍🔬", "🔍", "🕵️‍♀️", "🚔", "🔬", "🧲", "📝", "🗝️", "🔎", "👀", "🧠", "🛡️", "📚", "🕰️"]
-SECRET_KEY = "attivita_il_testo_giallo"
+SECRET_KEY = os.environ.get("SECRET_KEY", "password-super-segreta-del-progetto-giallo")
+DEBUG = os.environ.get("FLASK_DEBUG", "0").strip().lower() in {"1", "true", "yes", "on"}
+HOST = os.environ.get("HOST", "0.0.0.0")
+PORT = int(os.environ.get("PORT", "80"))
+SOCKETIO_ALLOWED_ORIGINS = os.environ.get("SOCKETIO_ALLOWED_ORIGINS", "*")
+RATE_LIMIT_WINDOW_SECONDS = int(os.environ.get("RATE_LIMIT_WINDOW_SECONDS", "10"))
+RATE_LIMIT_MAX_REQUESTS = int(os.environ.get("RATE_LIMIT_MAX_REQUESTS", "12"))
 
 STORY_TEXT = """Era una notte di novembre gelida e immobile, quando il tranquillo silenzio che avvolgeva la villa Whitmore, una grande residenza isolata nei pressi di Londra, fu squarciato dalla scoperta di un omicidio. La villa, antica e imponente, aveva ospitato una festa elegante, un evento che prometteva allegria, ma che si sarebbe presto trasformato in un incubo.
 
@@ -24,6 +33,5 @@ La villa Whitmore, con la sua bellezza inquietante, nascondeva più di quanto le
 
 CLASSROOM_LINK = "https://classroom.google.com/c/ODUxNzYyMzkyNjIx?cjc=kfolr33h"
 
-import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info("Config module loaded")

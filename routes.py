@@ -1,10 +1,31 @@
 from flask import render_template, request, jsonify, session, redirect, url_for
 import time
 import html
+import logging
+from collections import defaultdict, deque
 from app_factory import app
-from config import VALID_ICONS, STORY_TEXT, CLASSROOM_LINK
+from config import VALID_ICONS, STORY_TEXT, CLASSROOM_LINK, RATE_LIMIT_WINDOW_SECONDS, RATE_LIMIT_MAX_REQUESTS
 from data import teams
 from utils import emit_state_update
+
+_rate_limit_buckets = defaultdict(deque)
+
+
+def _is_rate_limited(client_ip):
+    if not client_ip:
+        return False
+
+    now = time.time()
+    bucket = _rate_limit_buckets[client_ip]
+
+    while bucket and (now - bucket[0]) > RATE_LIMIT_WINDOW_SECONDS:
+        bucket.popleft()
+
+    if len(bucket) >= RATE_LIMIT_MAX_REQUESTS:
+        return True
+
+    bucket.append(now)
+    return False
 
 
 @app.route('/')
@@ -16,42 +37,50 @@ def index():
 
 @app.route('/register', methods=['POST'])
 def register():
-    data = request.json
-    team_name = data.get('name', '').strip()
-    
-    # Sanitizzazione e validazione
-    if not team_name or len(team_name) > 50:
-        return jsonify({"success": False, "message": "Nome squadra invalido (max 50 caratteri, non vuoto)"})
-    
-    team_name = html.escape(team_name)  # Evita XSS
-    
-    icon = data.get('icon')
-    if icon not in VALID_ICONS:
-        return jsonify({"success": False, "message": "Icona non valida"})
-    
-    # Crea un ID unico per la squadra includendo anche l'indice dell'icona selezionata.
-    # Formato: team_<timestamp>_i<icon_index>_<team_name>
-    icon_index = VALID_ICONS.index(icon)
-    team_id = f"team_{int(time.time())}_i{icon_index}_{team_name}"
-    
-    teams[team_id] = {
-        "name": team_name,
-        "icon": icon,
-        "step": 0,
-        "start_time": time.time(),
-        "end_time": None,
-        "last_seen": time.time()
-    }
-    
-    session['team_id'] = team_id
-    
-    import logging
-    logging.info(f"Team {team_id} registered with name '{team_name}'")
-    
-    # Emetti aggiornamento stato per includere il nuovo giocatore
-    emit_state_update()
-    
-    return jsonify({"success": True})
+    try:
+        if _is_rate_limited(request.remote_addr):
+            return jsonify({"success": False, "message": "Troppe richieste. Riprova tra pochi secondi."}), 429
+
+        data = request.get_json(silent=True) or {}
+        if not isinstance(data, dict):
+            return jsonify({"success": False, "message": "Formato richiesta non valido"}), 400
+
+        team_name = data.get('name', '').strip()
+
+        # Sanitizzazione e validazione
+        if not team_name or len(team_name) > 50:
+            return jsonify({"success": False, "message": "Nome squadra invalido (max 50 caratteri, non vuoto)"}), 400
+
+        team_name = html.escape(team_name)  # Evita XSS
+
+        icon = data.get('icon')
+        if icon not in VALID_ICONS:
+            return jsonify({"success": False, "message": "Icona non valida"}), 400
+
+        # Crea un ID unico per la squadra includendo anche l'indice dell'icona selezionata.
+        # Formato: team_<timestamp>_i<icon_index>_<team_name>
+        icon_index = VALID_ICONS.index(icon)
+        team_id = f"team_{int(time.time())}_i{icon_index}_{team_name}"
+
+        teams[team_id] = {
+            "name": team_name,
+            "icon": icon,
+            "step": 0,
+            "start_time": time.time(),
+            "end_time": None,
+            "last_seen": time.time()
+        }
+
+        session['team_id'] = team_id
+        logging.info("Team %s registered with name '%s'", team_id, team_name)
+
+        # Emetti aggiornamento stato per includere il nuovo giocatore
+        emit_state_update()
+
+        return jsonify({"success": True})
+    except Exception:
+        logging.exception("Unhandled error in /register")
+        return jsonify({"success": False, "message": "Errore interno del server"}), 500
 
 
 @app.route('/game')
@@ -64,50 +93,70 @@ def game():
 @app.route('/api/state')
 def get_state():
     """Restituisce lo stato di tutti i giocatori per la mappa in tempo reale."""
-    from data import get_leaderboard
-    leaderboard = get_leaderboard()
-    return jsonify({"teams": teams, "leaderboard": leaderboard})
+    try:
+        from data import get_leaderboard
+
+        leaderboard = get_leaderboard()
+        return jsonify({"teams": teams, "leaderboard": leaderboard})
+    except Exception:
+        logging.exception("Unhandled error in /api/state")
+        return jsonify({"success": False, "message": "Errore interno del server"}), 500
 
 
 @app.route('/api/advance', methods=['POST'])
 def advance():
     """Verifica la parola chiave e fa avanzare la squadra."""
-    if 'team_id' not in session:
-        return jsonify({"success": False, "message": "Non autorizzato"})
-    
-    from config import SOLUTIONS
-    team_id = session['team_id']
-    team = teams[team_id]
-    team['last_seen'] = time.time()
-    
-    data = request.json
-    answer = data.get('answer', '').strip().lower()
-    
-    # Validazione input
-    if len(answer) > 100:
-        return jsonify({"success": False, "message": "Risposta troppo lunga"})
-    
-    current_step = team['step']
-    
-    if current_step < 5:
-        # Verifica se la risposta è corretta per lo step attuale
-        if answer == SOLUTIONS[current_step]:
-            team['step'] += 1
-            import logging
-            logging.info(f"Team {team_id} advanced to step {team['step']}")
-            if team['step'] == 5:
-                team['end_time'] = time.time() # Registra il tempo finale!
-                time_taken = int(team['end_time'] - team['start_time'])
-                logging.info(f"Team {team_id} completed the game in {time_taken} seconds")
-            
-            # Emetti aggiornamento stato a tutti i client connessi
-            emit_state_update()
-            
-            return jsonify({"success": True, "step": team['step']})
-        else:
-            return jsonify({"success": False, "message": "Parola chiave errata!"})
-            
-    return jsonify({"success": False, "message": "Hai già finito!"})
+    try:
+        if _is_rate_limited(request.remote_addr):
+            return jsonify({"success": False, "message": "Troppe richieste. Rallenta e riprova."}), 429
 
-import logging
+        if 'team_id' not in session:
+            return jsonify({"success": False, "message": "Non autorizzato"}), 401
+
+        from config import SOLUTIONS
+
+        team_id = session['team_id']
+        team = teams.get(team_id)
+        if not team:
+            return jsonify({"success": False, "message": "Sessione non valida. Effettua di nuovo l'accesso."}), 401
+
+        team['last_seen'] = time.time()
+
+        data = request.get_json(silent=True) or {}
+        if not isinstance(data, dict):
+            return jsonify({"success": False, "message": "Formato richiesta non valido"}), 400
+
+        answer = data.get('answer', '').strip().lower()
+
+        # Validazione input
+        if not answer:
+            return jsonify({"success": False, "message": "Inserisci una parola chiave"}), 400
+        if len(answer) > 100:
+            return jsonify({"success": False, "message": "Risposta troppo lunga"}), 400
+
+        current_step = team['step']
+
+        if current_step < 5:
+            # Verifica se la risposta è corretta per lo step attuale
+            if answer == SOLUTIONS[current_step]:
+                team['step'] += 1
+                logging.info("Team %s advanced to step %s", team_id, team['step'])
+                if team['step'] == 5:
+                    team['end_time'] = time.time()  # Registra il tempo finale.
+                    time_taken = int(team['end_time'] - team['start_time'])
+                    logging.info("Team %s completed the game in %s seconds", team_id, time_taken)
+
+                # Emetti aggiornamento stato a tutti i client connessi
+                emit_state_update()
+
+                return jsonify({"success": True, "step": team['step']})
+
+            return jsonify({"success": False, "message": "Parola chiave errata!"})
+
+        return jsonify({"success": False, "message": "Hai gia finito!"})
+    except Exception:
+        logging.exception("Unhandled error in /api/advance")
+        return jsonify({"success": False, "message": "Errore interno del server"}), 500
+
+
 logging.info("Routes module loaded")

@@ -8,6 +8,14 @@
 let initialIframeMarkup = null;
 let lastRenderedTeamStep = null;
 
+function setTransientMessage(message, color) {
+    const errorMsg = document.getElementById('error-msg');
+    if (!errorMsg) return;
+
+    errorMsg.style.color = color || '#ffb347';
+    errorMsg.innerText = message;
+}
+
 function syncStepNodeLabels() {
     for (let i = 0; i < STEP_NAMES.length; i++) {
         const node = document.getElementById(`node-${i}`);
@@ -148,12 +156,31 @@ function initGame() {
     });
 
     // Connetti a SocketIO per aggiornamenti in tempo reale
-    const socket = io();
+    const socket = io({
+        reconnection: true,
+        reconnectionAttempts: 8,
+        reconnectionDelay: 1000
+    });
     socket.on('connect', () => {
         console.log('Connected to server');
+        setTransientMessage('Connessione ristabilita.', 'lightgreen');
         socket.emit('join', { team_id: myTeamId });
     });
-    socket.on('disconnect', () => console.log('Disconnected from server'));
+    socket.on('connect_error', (err) => {
+        console.error('Socket connection error:', err);
+        setTransientMessage('Problema di connessione al server. Riprovo automaticamente...');
+    });
+    socket.on('reconnect_attempt', () => {
+        setTransientMessage('Riconnessione in corso...');
+    });
+    socket.on('join_error', (payload) => {
+        const message = payload && payload.message ? payload.message : 'Errore durante il join della sessione.';
+        setTransientMessage(message, '#ff4c4c');
+    });
+    socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+        setTransientMessage('Connessione persa. Tentativo di riconnessione...');
+    });
     socket.on('state_update', function(data) {
         console.log('Received state update:', data); // Debug
         renderBoard(data.teams);
@@ -170,14 +197,22 @@ function initGame() {
 }
 
 async function fetchState() {
-    const res = await fetch('/api/state');
-    const data = await res.json();
+    try {
+        const res = await fetch('/api/state');
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
 
-    renderBoard(data.teams);
-    renderLeaderboard(data.leaderboard);
+        const data = await res.json();
+        renderBoard(data.teams);
+        renderLeaderboard(data.leaderboard);
 
-    const myTeam = data.teams[myTeamId];
-    if (myTeam) {
-        updateMyTeamUI(myTeam.step);
+        const myTeam = data.teams[myTeamId];
+        if (myTeam) {
+            updateMyTeamUI(myTeam.step);
+        }
+    } catch (err) {
+        console.error('Unable to fetch game state:', err);
+        setTransientMessage('Impossibile recuperare lo stato iniziale. Ricarica la pagina o riprova tra poco.', '#ff4c4c');
     }
 }
