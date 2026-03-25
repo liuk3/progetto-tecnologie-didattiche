@@ -63,6 +63,8 @@ function showCompletedState() {
     const iframeContainer = getIframeContainer();
     if (!iframeContainer) return;
 
+    toggleFinalPuzzleNote(false);
+
     iframeContainer.innerHTML = `
         <section class="completed-state" aria-live="polite">
             <h2 class="completed-title">MISTERO RISOLTO!</h2>
@@ -80,9 +82,19 @@ function showCompletedState() {
     }
 }
 
+function toggleFinalPuzzleNote(isVisible) {
+    const finalPuzzleNote = document.getElementById('final-puzzle-note');
+    if (!finalPuzzleNote) return;
+
+    finalPuzzleNote.hidden = !isVisible;
+}
+
 function showPuzzleState(step) {
     const iframeContainer = getIframeContainer();
     if (!iframeContainer) return;
+
+    // L'ultimo cruciverba e allo step index 4 (5° step).
+    toggleFinalPuzzleNote(step === 4);
 
     if (initialIframeMarkup === null) {
         initialIframeMarkup = iframeContainer.innerHTML;

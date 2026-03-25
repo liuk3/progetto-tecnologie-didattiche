@@ -131,6 +131,26 @@
     border-radius: 5px;
 }
 
+.final-puzzle-note {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #f1c40f;
+    border: 1px solid rgba(241, 196, 15, 0.45);
+    background: rgba(241, 196, 15, 0.08);
+    color: #f7f1df;
+}
+
+.final-puzzle-note h4 {
+    margin: 0 0 8px;
+    color: #f8d97c;
+}
+
+.final-puzzle-note p {
+    margin: 6px 0;
+    line-height: 1.55;
+}
+
 .submit-area input {
     padding: 8px;
     margin-right: 10px;
