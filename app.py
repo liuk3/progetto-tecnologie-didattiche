@@ -12,6 +12,6 @@ socketio.on('disconnect')(handle_disconnect)
 
 if __name__ == '__main__':
     # Esegui l'app con parametri configurabili via variabili ambiente.
-    socketio.run(app, host=HOST, port=PORT, debug=DEBUG)
+    socketio.run(app, host=HOST, port=PORT, debug=DEBUG, allow_unsafe_werkzeug=True)
 
     # ngrok http 80 
