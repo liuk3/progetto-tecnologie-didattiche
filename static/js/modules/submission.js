@@ -33,7 +33,8 @@ async function submitAnswer() {
             errorMsg.innerText = 'Corretto! Avanzamento in corso...';
 
             // Aggiungi la parola segreta allo step appena risolto.
-            addSecretWordToSticky(answer, data.step - 1);
+            const solvedWord = typeof data.solved_word === 'string' ? data.solved_word : answer;
+            addSecretWordToSticky(solvedWord, data.step - 1);
 
             if (data.step < 5) {
                 // Festeggia il passo completato

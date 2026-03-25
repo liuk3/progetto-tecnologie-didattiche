@@ -28,6 +28,11 @@ def _is_rate_limited(client_ip):
     return False
 
 
+def _normalize_solution_text(value):
+    # Confronto tollerante: ignora spazi interni/esterni e maiuscole/minuscole.
+    return ''.join(value.strip().lower().split())
+
+
 @app.route('/')
 def index():
     if 'team_id' in session:
@@ -137,8 +142,9 @@ def advance():
         current_step = team['step']
 
         if current_step < 5:
+            expected_solution = SOLUTIONS[current_step]
             # Verifica se la risposta è corretta per lo step attuale
-            if answer == SOLUTIONS[current_step]:
+            if _normalize_solution_text(answer) == _normalize_solution_text(expected_solution):
                 team['step'] += 1
                 logging.info("Team %s advanced to step %s", team_id, team['step'])
                 if team['step'] == 5:
@@ -149,7 +155,7 @@ def advance():
                 # Emetti aggiornamento stato a tutti i client connessi
                 emit_state_update()
 
-                return jsonify({"success": True, "step": team['step']})
+                return jsonify({"success": True, "step": team['step'], "solved_word": expected_solution})
 
             return jsonify({"success": False, "message": "Parola chiave errata!"})
 

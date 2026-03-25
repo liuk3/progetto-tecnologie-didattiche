@@ -7,12 +7,16 @@ function normalizeStep(step) {
     return step > 4 ? 4 : step;
 }
 
+function isTeamFinished(team) {
+    return typeof team.step === 'number' && team.step >= 5;
+}
+
 function getBoardRenderSignature(teams) {
     return Object.keys(teams)
         .sort()
         .map(id => {
             const team = teams[id];
-            return `${id}:${normalizeStep(team.step)}:${team.icon}:${team.name}`;
+            return `${id}:${team.step}:${team.icon}:${team.name}`;
         })
         .join('|');
 }
@@ -43,9 +47,15 @@ function renderBoard(teams) {
 
     // Raggruppiamo le squadre per step
     const teamsByStep = {0: [], 1: [], 2: [], 3: [], 4: []};
+    const visibleTeamIds = [];
     Object.keys(teams).forEach(id => {
+        if (isTeamFinished(teams[id])) {
+            return;
+        }
+
         const step = normalizeStep(teams[id].step);
         teamsByStep[step].push(id);
+        visibleTeamIds.push(id);
     });
 
     // Calcola le colonne e le coordinate
@@ -107,11 +117,10 @@ function renderBoard(teams) {
     }
 
     // Rimuovi icone di team disconnessi
-    const currentTeamIds = Object.keys(teams);
     const allIcons = layer.querySelectorAll('.player-icon');
     allIcons.forEach(icon => {
         const teamId = icon.id.replace('icon-', '');
-        if (!currentTeamIds.includes(teamId)) {
+        if (!visibleTeamIds.includes(teamId)) {
             icon.remove();
         }
     });
