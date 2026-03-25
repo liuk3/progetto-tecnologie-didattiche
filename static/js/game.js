@@ -71,7 +71,7 @@ function showCompletedState() {
             <p class="completed-subtitle">Bravissimi detective! Avete trovato l'assassino.</p>
             <p class="completed-text">Date un ultimo sguardo alla classifica e poi consegnate il riassunto finale.</p>
             <a class="completed-cta" href="${classroomLink}" target="_blank" rel="noopener noreferrer">
-                Vai su Classroom e completa la missione
+                Vai su Classroom e completa l'indagine
             </a>
         </section>
     `;
