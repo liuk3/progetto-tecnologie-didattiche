@@ -6,6 +6,7 @@
 // - modules/submission.js (gestione invio risposte)
 
 let initialIframeMarkup = null;
+let lastRenderedTeamStep = null;
 
 function syncStepNodeLabels() {
     for (let i = 0; i < STEP_NAMES.length; i++) {
@@ -43,7 +44,7 @@ function renderPuzzleMakerEmbed(iframeContainer, xid) {
 
     const info = document.createElement('p');
     info.className = 'wl-info';
-    info.innerHTML = 'Creato con l\'ausilio di <a href="https://puzzle-maker.online?lang=it">puzzle-maker.online</a>';
+    info.innerHTML = 'Creato con l\'ausilio di <a href="https://puzzle-maker.online?lang=it" target="_blank" rel="noopener noreferrer">puzzle-maker.online</a>';
 
     wrapper.appendChild(script);
     wrapper.appendChild(info);
@@ -55,12 +56,14 @@ function showCompletedState() {
     if (!iframeContainer) return;
 
     iframeContainer.innerHTML = `
-        <h2>🎉 MISTERO RISOLTO! 🎉</h2>
-        <p>Hai trovato l'assassino! Guarda la classifica.</p>
-        <p>
-            Ora puoi procedere scrivendo il riassunto della storia su
-            <a href="${classroomLink}" target="_blank" rel="noopener noreferrer">Classroom</a>.
-        </p>
+        <section class="completed-state" aria-live="polite">
+            <h2 class="completed-title">MISTERO RISOLTO!</h2>
+            <p class="completed-subtitle">Bravissimi detective! Avete trovato l'assassino.</p>
+            <p class="completed-text">Date un ultimo sguardo alla classifica e poi consegnate il riassunto finale.</p>
+            <a class="completed-cta" href="${classroomLink}" target="_blank" rel="noopener noreferrer">
+                Vai su Classroom e completa la missione
+            </a>
+        </section>
     `;
 
     const submitArea = document.querySelector('.submit-area');
@@ -78,7 +81,7 @@ function showPuzzleState(step) {
     }
 
     const puzzleUrl = step >= 0 && step < PUZZLE_URLS.length ? PUZZLE_URLS[step] : null;
-    const puzzleMakerXid = extractPuzzleMakerXid(puzzleUrl) || (step === 0 ? '1d7gf82' : null);
+    const puzzleMakerXid = extractPuzzleMakerXid(puzzleUrl);
 
     if (puzzleMakerXid) {
         renderPuzzleMakerEmbed(iframeContainer, puzzleMakerXid);
@@ -106,6 +109,16 @@ function applyProgressUI(teamStep) {
     }
 
     showPuzzleState(teamStep);
+}
+
+function updateMyTeamUI(teamStep) {
+    if (teamStep === lastRenderedTeamStep) {
+        return;
+    }
+
+    syncStickyNoteWithCurrentStep(teamStep);
+    applyProgressUI(teamStep);
+    lastRenderedTeamStep = teamStep;
 }
 
 function initGame() {
@@ -148,8 +161,7 @@ function initGame() {
 
         const myTeam = data.teams[myTeamId];
         if (myTeam) {
-            syncStickyNoteWithCurrentStep(myTeam.step);
-            applyProgressUI(myTeam.step);
+            updateMyTeamUI(myTeam.step);
         }
     });
 
@@ -166,7 +178,6 @@ async function fetchState() {
 
     const myTeam = data.teams[myTeamId];
     if (myTeam) {
-        syncStickyNoteWithCurrentStep(myTeam.step);
-        applyProgressUI(myTeam.step);
+        updateMyTeamUI(myTeam.step);
     }
 }

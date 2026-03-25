@@ -56,6 +56,20 @@
         margin-right: 5px;
     }
 
+    .completed-state {
+        padding: 20px 16px;
+    }
+
+    .completed-subtitle,
+    .completed-text {
+        font-size: 0.98rem;
+    }
+
+    .completed-cta {
+        width: 100%;
+        text-align: center;
+    }
+
     .icon-selector {
         flex-wrap: wrap;
         justify-content: center;

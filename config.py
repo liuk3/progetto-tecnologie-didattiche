@@ -1,5 +1,5 @@
 # Configurazioni e costanti
-SOLUTIONS = ["luogo123", "tempo123", "arma123", "movente123", "assassino123"]
+SOLUTIONS = ["biblioteca", "notte di novembre", "corda", "relazione passata", "benedetta farkas"]
 VALID_ICONS = ["🕵️", "👮", "🧑‍🔬", "🔍", "🕵️‍♀️", "🚔", "🔬", "🧲", "📝", "🗝️", "🔎", "👀", "🧠", "🛡️", "📚", "🕰️"]
 SECRET_KEY = "attivita_il_testo_giallo"
 

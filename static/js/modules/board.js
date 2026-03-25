@@ -1,9 +1,37 @@
 // --- RENDERIZZAZIONE BOARD E LEADERBOARD ---
 
+let lastBoardRenderSignature = null;
+let lastLeaderboardRenderSignature = null;
+
+function normalizeStep(step) {
+    return step > 4 ? 4 : step;
+}
+
+function getBoardRenderSignature(teams) {
+    return Object.keys(teams)
+        .sort()
+        .map(id => {
+            const team = teams[id];
+            return `${id}:${normalizeStep(team.step)}:${team.icon}:${team.name}`;
+        })
+        .join('|');
+}
+
+function getLeaderboardRenderSignature(leaderboard) {
+    return leaderboard
+        .map((team, index) => `${index}:${team.name}:${team.icon}:${team.step}:${team.start_time ?? ''}:${team.end_time ?? ''}`)
+        .join('|');
+}
+
 function renderBoard(teams) {
     const layer = document.getElementById('players-absolute-layer');
     const container = document.querySelector('.board-container');
     if (!container || !layer) return;
+
+    const boardSignature = getBoardRenderSignature(teams);
+    if (boardSignature === lastBoardRenderSignature) {
+        return;
+    }
 
     // Ottieni le dimensioni della griglia
     const playersGrid = document.querySelector('.players-grid');
@@ -16,8 +44,7 @@ function renderBoard(teams) {
     // Raggruppiamo le squadre per step
     const teamsByStep = {0: [], 1: [], 2: [], 3: [], 4: []};
     Object.keys(teams).forEach(id => {
-        let step = teams[id].step;
-        if (step > 4) step = 4;
+        const step = normalizeStep(teams[id].step);
         teamsByStep[step].push(id);
     });
 
@@ -88,10 +115,19 @@ function renderBoard(teams) {
             icon.remove();
         }
     });
+
+    lastBoardRenderSignature = boardSignature;
 }
 
 function renderLeaderboard(leaderboard) {
     const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+
+    const leaderboardSignature = getLeaderboardRenderSignature(leaderboard);
+    if (leaderboardSignature === lastLeaderboardRenderSignature) {
+        return;
+    }
+
     list.innerHTML = '';
 
     leaderboard.forEach((team, index) => {
@@ -112,4 +148,6 @@ function renderLeaderboard(leaderboard) {
         li.innerText = `${index + 1}. ${team.icon} ${team.name} - ${status}`;
         list.appendChild(li);
     });
+
+    lastLeaderboardRenderSignature = leaderboardSignature;
 }
