@@ -29,6 +29,16 @@ function getIframeContainer() {
     return document.getElementById('iframe-container');
 }
 
+function getPuzzleEmbedHeightPx() {
+    const viewportHeight = window.innerHeight || 800;
+    const computed = Math.round(viewportHeight * 0.84);
+    return Math.min(1060, Math.max(620, computed));
+}
+
+function scrollPageToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function extractPuzzleMakerXid(url) {
     if (!url) return null;
 
@@ -38,12 +48,13 @@ function extractPuzzleMakerXid(url) {
 
 function renderPuzzleMakerEmbed(iframeContainer, xid) {
     iframeContainer.innerHTML = '';
+    const embedHeightPx = getPuzzleEmbedHeightPx();
 
     const wrapper = document.createElement('div');
     wrapper.className = 'wl-xword';
     wrapper.setAttribute('data-xid', xid);
     wrapper.setAttribute('data-width', '100%');
-    wrapper.setAttribute('data-height', '700px');
+    wrapper.setAttribute('data-height', `${embedHeightPx}px`);
 
     const script = document.createElement('script');
     script.src = 'https://embed.puzzle-maker.online/dist/embed.js';
@@ -62,6 +73,7 @@ function renderPuzzleMakerEmbed(iframeContainer, xid) {
 function showCompletedState() {
     const iframeContainer = getIframeContainer();
     if (!iframeContainer) return;
+    iframeContainer.classList.add('is-completed');
 
     toggleFinalPuzzleNote(false);
 
@@ -92,6 +104,7 @@ function toggleFinalPuzzleNote(isVisible) {
 function showPuzzleState(step) {
     const iframeContainer = getIframeContainer();
     if (!iframeContainer) return;
+    iframeContainer.classList.remove('is-completed');
 
     // L'ultimo cruciverba e allo step index 4 (5° step).
     toggleFinalPuzzleNote(step === 4);
@@ -112,6 +125,7 @@ function showPuzzleState(step) {
 
         const puzzleFrame = document.getElementById('puzzle-frame');
         if (puzzleFrame && puzzleUrl) {
+            puzzleFrame.style.height = `${getPuzzleEmbedHeightPx()}px`;
             puzzleFrame.src = puzzleUrl;
         }
     }
@@ -136,8 +150,15 @@ function updateMyTeamUI(teamStep) {
         return;
     }
 
+    const didAdvanceStep = lastRenderedTeamStep !== null && teamStep > lastRenderedTeamStep;
+
     syncStickyNoteWithCurrentStep(teamStep);
     applyProgressUI(teamStep);
+
+    if (didAdvanceStep) {
+        scrollPageToTop();
+    }
+
     lastRenderedTeamStep = teamStep;
 }
 

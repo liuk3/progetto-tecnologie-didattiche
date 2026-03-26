@@ -2,6 +2,7 @@
 @media (max-width: 768px) {
     body {
         padding: 10px;
+        overflow-x: hidden;
     }
 
     .login-container {
@@ -12,17 +13,28 @@
 
     .board-container {
         max-width: 100%;
-        padding: 15px;
+        padding: 14px;
     }
 
     .track {
-        flex-direction: column;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .players-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 10px;
     }
 
     .step-node {
-        width: 100%;
-        text-align: center;
+        padding: 9px 12px;
+        font-size: clamp(0.85rem, 2.2vw, 1rem);
+        text-wrap: balance;
+    }
+
+    .step-players {
+        min-height: 66px;
+        padding: 8px;
     }
 
     .main-content {
@@ -40,7 +52,12 @@
         width: 100%;
     }
 
+    .puzzle-area {
+        padding: 16px;
+    }
+
     .story-panel {
+        margin: 14px 0 18px;
         padding: 14px;
     }
 
@@ -51,9 +68,19 @@
         line-height: 1.75;
     }
 
+    #iframe-container {
+        min-height: 660px;
+        height: min(82vh, 900px);
+    }
+
     .submit-area input {
-        width: 70%;
-        margin-right: 5px;
+        width: 100%;
+        margin: 0 0 10px;
+        box-sizing: border-box;
+    }
+
+    .submit-area button {
+        width: 100%;
     }
 
     .completed-state {
@@ -87,5 +114,145 @@
 
     .sticky-note {
         transform: rotate(0deg);
+    }
+
+    .sticky-note::before {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+
+    h2 {
+        font-size: clamp(1.2rem, 5vw, 1.6rem);
+    }
+
+    h3 {
+        font-size: clamp(1.05rem, 4.3vw, 1.35rem);
+    }
+
+    .board-container {
+        padding: 12px;
+        margin-bottom: 14px;
+    }
+
+    .track {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .players-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .step-node {
+        min-height: 42px;
+        padding: 8px 10px;
+        font-size: clamp(0.8rem, 3.4vw, 0.95rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .step-players {
+        min-height: 56px;
+        padding: 6px;
+    }
+
+    .main-content {
+        gap: 12px;
+    }
+
+    .puzzle-area,
+    .leaderboard-area,
+    .sticky-note {
+        padding: 12px;
+    }
+
+    .story-panel {
+        padding: 12px;
+        margin: 12px 0 14px;
+    }
+
+    .story-title {
+        font-size: clamp(0.88rem, 3.8vw, 1rem);
+    }
+
+    .story-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .story-content {
+        max-height: 250px;
+        padding: 12px;
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    #iframe-container {
+        min-height: 580px;
+        height: 79vh;
+    }
+
+    .submit-area {
+        padding: 12px;
+    }
+
+    .submit-area p {
+        margin-top: 0;
+        font-size: 0.92rem;
+    }
+
+    .leaderboard-area li {
+        padding: 8px 6px;
+        font-size: 0.9rem;
+    }
+
+    .sticky-note-header {
+        font-size: 1.4rem;
+    }
+
+    .sticky-note-content {
+        font-size: 1.05rem;
+        line-height: 1.55;
+        max-height: 260px;
+    }
+}
+
+@media (max-width: 390px) and (min-width: 361px) {
+    .track,
+    .players-grid {
+        gap: 6px;
+    }
+
+    .step-node {
+        font-size: 0.84rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .track,
+    .players-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .step-node {
+        min-height: 38px;
+        padding: 7px 10px;
+        font-size: 0.82rem;
+    }
+
+    #iframe-container {
+        min-height: 540px;
+        height: 77vh;
+    }
+
+    .player-icon {
+        font-size: 20px;
     }
 }

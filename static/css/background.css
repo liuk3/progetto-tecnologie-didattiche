@@ -45,3 +45,37 @@
     height: 80px;
     background-image: url('/static/imgs/pngtree-cream-sticky-notes-paper-illustration-with-clip-white-transparent-background-png-image_6484210.png');
 }
+
+@media (max-width: 768px) {
+    .bg-img {
+        opacity: 0.5;
+    }
+
+    .bg-img.footprints {
+        width: 460px;
+        height: 460px;
+    }
+
+    .bg-img.magnifying,
+    .bg-img.question,
+    .bg-img.pin,
+    .bg-img.notes {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .bg-img.footprints {
+        width: 300px;
+        height: 300px;
+        opacity: 0.25;
+    }
+
+    .bg-img.magnifying,
+    .bg-img.question,
+    .bg-img.pin,
+    .bg-img.notes {
+        display: none;
+    }
+}
