@@ -1,3 +1,26 @@
+## Pannello admin riservato
+
+- URL diretto: `/<ADMIN_URL_PATH>` (default: `/admin-access`)
+- La pagina non e linkata da index/game ed e raggiungibile solo inserendo l'URL manualmente.
+- Password admin verificata tramite hash SHA-256 in `.env`:
+	- `ADMIN_PASSWORD_SHA256`
+
+### Password di default
+
+Nel file `.env` e presente l'hash della password predefinita:
+
+- password: `admin-reset`
+
+Per sicurezza cambiala subito impostando un nuovo hash SHA-256 in `.env`.
+
+Esempio PowerShell per generare hash SHA-256:
+
+```powershell
+$password = "la-tua-password-nuova"
+$bytes = [System.Text.Encoding]::UTF8.GetBytes($password)
+$hashBytes = [System.Security.Cryptography.SHA256]::HashData($bytes)
+($hashBytes | ForEach-Object { $_.ToString("x2") }) -join ""
+```
 # Progetto Testo Giallo
 
 Web app Flask + Socket.IO per una gara investigativa a squadre.

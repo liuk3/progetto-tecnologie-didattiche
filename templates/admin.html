@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Pannello Admin</title>
+    <style>
+        :root {
+            --bg-1: #0f172a;
+            --bg-2: #1e293b;
+            --card: #111827;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+            --ok: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at 20% 20%, #1f2937, transparent 40%),
+                        radial-gradient(circle at 80% 0%, #312e81, transparent 35%),
+                        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+            display: grid;
+            place-items: center;
+            padding: 16px;
+        }
+
+        .panel {
+            width: min(560px, 100%);
+            background: color-mix(in srgb, var(--card) 85%, black);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.6rem;
+            letter-spacing: 0.3px;
+        }
+
+        p {
+            margin-top: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-top: 16px;
+            display: grid;
+            gap: 10px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        button {
+            margin-top: 10px;
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            margin-top: 18px;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
+
+        .warning {
+            margin-top: 12px;
+            color: #fecaca;
+            font-weight: 700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .status {
+            min-height: 22px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .status.error {
+            color: #fca5a5;
+        }
+
+        .status.ok {
+            color: #86efac;
+        }
+    </style>
+</head>
+<body>
+    <main class="panel">
+        <h1>Pannello Admin Riservato</h1>
+        <p>Pagina non collegata al resto del sito. Accesso solo tramite URL diretto.</p>
+
+        <section id="login-box" class="{{ '' if not is_authenticated else 'hidden' }}">
+            <div class="field">
+                <label for="admin-password">Password amministratore</label>
+                <input id="admin-password" type="password" autocomplete="current-password" required>
+            </div>
+            <button id="login-btn" class="btn-primary" type="button">Accedi</button>
+        </section>
+
+        <section id="actions-box" class="{{ '' if is_authenticated else 'hidden' }}">
+            <p class="warning">Attenzione: il reset e irreversibile e riporta tutti i team allo step iniziale.</p>
+            <button id="reset-btn" class="btn-danger" type="button">RESET TOTALE DEL SITO</button>
+        </section>
+
+        <p id="admin-status" class="status" aria-live="polite"></p>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

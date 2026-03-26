@@ -11,6 +11,11 @@ PORT = int(os.environ.get("PORT", "80"))
 SOCKETIO_ALLOWED_ORIGINS = os.environ.get("SOCKETIO_ALLOWED_ORIGINS", "*")
 RATE_LIMIT_WINDOW_SECONDS = int(os.environ.get("RATE_LIMIT_WINDOW_SECONDS", "10"))
 RATE_LIMIT_MAX_REQUESTS = int(os.environ.get("RATE_LIMIT_MAX_REQUESTS", "12"))
+ADMIN_URL_PATH = os.environ.get("ADMIN_URL_PATH", "admin-access")
+ADMIN_PASSWORD_SHA256 = os.environ.get(
+	"ADMIN_PASSWORD_SHA256",
+	"c9e3f03ba57fc9e910567964387d648cf1d97f129219c24580c5adc33331e6e4"
+)
 
 STORY_TEXT = """Era una notte di novembre gelida e immobile, quando il tranquillo silenzio che avvolgeva la villa Whitmore, una grande residenza isolata nei pressi di Londra, fu squarciato dalla scoperta di un omicidio. La villa, antica e imponente, aveva ospitato una festa elegante, un evento che prometteva allegria, ma che si sarebbe presto trasformato in un incubo.
 

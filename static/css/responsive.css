@@ -135,33 +135,67 @@
     }
 
     .board-container {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+            "title title"
+            "n1 n2"
+            "p1 p2"
+            "n3 n4"
+            "p3 p4"
+            "n5 n5"
+            "p5 p5";
+        row-gap: 3px;
+        column-gap: 8px;
         padding: 12px;
         margin-bottom: 14px;
     }
 
+    .board-container > h2 {
+        grid-area: title;
+        margin: 0;
+    }
+
     .track {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        display: contents;
+    }
+
+    .players-grid {
+        display: contents;
+    }
+
+    .step-node {
         gap: 8px;
         margin-top: 14px;
     }
 
-    .players-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-    }
+    #node-0 { grid-area: n1; }
+    #node-1 { grid-area: n2; }
+    #node-2 { grid-area: n3; }
+    #node-3 { grid-area: n4; }
+    #node-4 { grid-area: n5; }
+
+    #players-step-0 { grid-area: p1; }
+    #players-step-1 { grid-area: p2; }
+    #players-step-2 { grid-area: p3; }
+    #players-step-3 { grid-area: p4; }
+    #players-step-4 { grid-area: p5; }
 
     .step-node {
-        min-height: 42px;
+        min-height: 34px;
         padding: 8px 10px;
         font-size: clamp(0.8rem, 3.4vw, 0.95rem);
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 12px;
+        margin: 0;
     }
 
     .step-players {
         min-height: 56px;
         padding: 6px;
+        margin: 0;
     }
 
     .main-content {
