@@ -27,13 +27,14 @@ function getLeaderboardRenderSignature(leaderboard) {
         .join('|');
 }
 
-function renderBoard(teams) {
+function renderBoard(teams, options = {}) {
+    const { force = false } = options;
     const layer = document.getElementById('players-absolute-layer');
     const container = document.querySelector('.board-container');
     if (!container || !layer) return;
 
     const boardSignature = getBoardRenderSignature(teams);
-    if (boardSignature === lastBoardRenderSignature) {
+    if (!force && boardSignature === lastBoardRenderSignature) {
         return;
     }
 

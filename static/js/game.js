@@ -7,6 +7,8 @@
 
 let initialIframeMarkup = null;
 let lastRenderedTeamStep = null;
+let latestTeamsSnapshot = null;
+let mobileReflowTimer = null;
 
 function setTransientMessage(message, color) {
     const errorMsg = document.getElementById('error-msg');
@@ -162,6 +164,21 @@ function updateMyTeamUI(teamStep) {
     lastRenderedTeamStep = teamStep;
 }
 
+function rerenderBoardPositionsForViewport() {
+    if (!latestTeamsSnapshot) return;
+    renderBoard(latestTeamsSnapshot, { force: true });
+}
+
+function scheduleMobileBoardReflow(delayMs = 120) {
+    if (mobileReflowTimer) {
+        clearTimeout(mobileReflowTimer);
+    }
+
+    mobileReflowTimer = setTimeout(() => {
+        rerenderBoardPositionsForViewport();
+    }, delayMs);
+}
+
 function initGame() {
     if (!document.getElementById('puzzle-frame')) return;
 
@@ -216,6 +233,7 @@ function initGame() {
     });
     socket.on('state_update', function(data) {
         console.log('Received state update:', data); // Debug
+        latestTeamsSnapshot = data.teams;
         renderBoard(data.teams);
         renderLeaderboard(data.leaderboard);
 
@@ -227,6 +245,20 @@ function initGame() {
 
     // Fallback iniziale: assicura UI coerente anche se lo state_update tarda ad arrivare.
     fetchState();
+
+    window.addEventListener('resize', () => {
+        scheduleMobileBoardReflow(150);
+    });
+
+    window.addEventListener('orientationchange', () => {
+        scheduleMobileBoardReflow(220);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            scheduleMobileBoardReflow(80);
+        }
+    });
 }
 
 async function fetchState() {
@@ -237,6 +269,7 @@ async function fetchState() {
         }
 
         const data = await res.json();
+        latestTeamsSnapshot = data.teams;
         renderBoard(data.teams);
         renderLeaderboard(data.leaderboard);
 
