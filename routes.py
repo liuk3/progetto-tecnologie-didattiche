@@ -218,8 +218,15 @@ def advance():
 
         if current_step < 5:
             expected_solution = SOLUTIONS[current_step]
+            normalized_answer = _normalize_solution_text(answer)
+
+            # Ultimo step: soluzione ufficiale "benedetta farkas", ma accettiamo anche "benedetta".
+            accepted_solutions = {_normalize_solution_text(expected_solution)}
+            if current_step == len(SOLUTIONS) - 1:
+                accepted_solutions.add(_normalize_solution_text("benedetta"))
+
             # Verifica se la risposta è corretta per lo step attuale
-            if _normalize_solution_text(answer) == _normalize_solution_text(expected_solution):
+            if normalized_answer in accepted_solutions:
                 team['step'] += 1
                 logging.info("Team %s advanced to step %s", team_id, team['step'])
                 if team['step'] == 5:
